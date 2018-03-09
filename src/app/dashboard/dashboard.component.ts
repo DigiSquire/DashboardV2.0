@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit{
     posts: Observable<Post[]>;
 
     barChartVertical: any;
+    pieChart;
     barChartHor: any;
     serverDataVert: any;
     serverDataHor;
@@ -103,10 +104,10 @@ export class DashboardComponent implements OnInit{
         ];
 
         new Chartist.Line('#chartHours', dataSales, optionsSales, responsiveSales);*/
-        var chart = new Chartist.Line('.ct-chart', {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-                        series: [ [10,12,15,12,14.5,16],
-                        [2,2.8,3,4,4.4,6]]
+        var chart = new Chartist.Bar('.ct-chart', {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            series: [[5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
+                [3, 2, 9, 5, 4, 6, 4, 6, 7, 8, 7, 4]]
                     }, {
                         chartPadding: {
                             top: 20,
@@ -129,7 +130,7 @@ export class DashboardComponent implements OnInit{
                                     textAnchor: 'middle'
                                 },
                                 axisY: {
-                                    axisTitle: 'Revenue (in mil)',
+                                    axisTitle: 'Sale Amount',
                                     axisClass: 'ct-axis-title',
                                     offset: {
                                         x: 0,
@@ -180,12 +181,12 @@ export class DashboardComponent implements OnInit{
         };
         this.serverDataHor = Object.assign({}, data);
         console.log(this.serverDataHor);
-        this.barChartHor = new Chartist.Bar('#chartActivity', data, options);
+        // this.barChartHor = new Chartist.Bar('#chartActivity', data, options);
         // Bar chart verical
         var dataPreferences = {
 
-            labels: ['Solution Design', 'Testing', 'Development', 'HR', 'Customer Requirements'],
-            series: [1.2, 2, 2.5, 4.8, 7.2]
+            labels: ['Cust 1', 'Cust 2', 'Cust 3', 'Cust 4', 'Cust 5', 'Cust 6', 'Cust 7', 'Cust 8', 'Cust 9', 'Cust 10'],
+            series: [1.2, 2, 2.5, 4.8, 7.2, 8.2, 9.2, 10.2, 11.2, 12.2]
         };
 
         var optionsPreferences = {
@@ -201,16 +202,16 @@ export class DashboardComponent implements OnInit{
           ),
               ctAxisTitle({
                   axisX: {
-                      axisTitle: 'Risk Categories',
+                      axisTitle: 'January',
                       axisClass: 'ct-axis-title',
                       offset: {
                           x: 0,
-                          y: 32
+                          y: 38
                       },
                       textAnchor: 'middle'
                   },
                   axisY: {
-                      axisTitle: 'Risk Exposure',
+                      axisTitle: 'Sale Amount',
                       axisClass: 'ct-axis-title',
                       offset: {
                           x: 0,
@@ -226,5 +227,57 @@ export class DashboardComponent implements OnInit{
         this.serverDataVert = Object.assign({}, dataPreferences);
         console.log(this.serverDataVert);
         this.barChartVertical = new Chartist.Bar('#chartPreferences', dataPreferences, optionsPreferences);
+        var sum = (a, b) => a + b;
+        // Pie chart
+        var pieData = {
+            data: ['Cash', 'Credit', 'Mixed'],
+            series: [20, 15, 40]
+        };
+
+        var pieOptions = {
+            labelInterpolationFnc: function (value, id) {
+                return `${Math.round(value / pieData.series.reduce(sum) * 100)}% ${pieData.data[id]}`;
+            }
+        };
+            this.pieChart = new Chartist.Pie('#chartActivity', pieData, pieOptions);
+            // Horizontal bar chart
+        new Chartist.Bar('#chartHighCreditMOP', {
+            labels: ['Quater 1', 'Quater 2', 'Quater 3', 'Quater 4'],
+            series: [
+                [5, 4, 3, 7],
+                [3, 2, 9, 5]
+            ]
+        },{
+            seriesBarDistance: 10,
+            reverseData: false,
+            horizontalBars: true,
+            axisY: {
+                offset: 90
+            },
+            plugins: [
+                ctAxisTitle({
+                    axisX: {
+                        axisTitle: 'Sale Amount',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: 32
+                        },
+                        textAnchor: 'middle'
+                    },
+                    axisY: {
+                        axisTitle: 'Quaters',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: 0
+                        },
+                        flipTitle: false
+                    }
+                })
+            ]
+        });
+
+
     }
 }

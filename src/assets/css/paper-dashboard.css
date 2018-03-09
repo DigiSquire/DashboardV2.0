@@ -2289,9 +2289,8 @@ Copyright (c) 2015 Daniel Eden
   fill: rgba(0, 0, 0, 0.4);
   color: rgba(0, 0, 0, 0.4);
   font-size: 0.9em;
-  line-height: 1;
+  line-height: 1;  
 }
-
 .ct-chart-line .ct-label,
 .ct-chart-bar .ct-label {
   display: block;
@@ -2326,6 +2325,26 @@ Copyright (c) 2015 Daniel Eden
   justify-content: flex-start;
   text-align: left;
   text-anchor: start;
+  
+}
+.ct-label.ct-horizontal.ct-end {
+  -webkit-box-align: flex-start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+  -webkit-box-pack: flex-start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  text-anchor: start;
+  /* transform: rotate(-30deg);
+  -webkit-transform: rotate(-30deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); */
+  
 }
 
 .ct-label.ct-vertical.ct-start {
