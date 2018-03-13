@@ -13,11 +13,6 @@ interface Post {
   title: string;
   status: string;
 }
-// export interface TopCustomer {
-//     name: string;
-//     saleAmt: string;
-// }
-
 @Component({
     selector: 'dashboard-cmp',
     moduleId: module.id,
@@ -28,12 +23,13 @@ interface Post {
 export class DashboardComponent implements OnInit {
     postsCol: AngularFirestoreCollection<Post>;
     posts: Observable<Post[]>;
-
     barChartVertical: any;
     pieChart;
-    barChartHor: any;
-    serverDataVert: any;
+    barChartHor;
+    serverDataVert;
+    serverDataPie;
     serverDataHor;
+    pieOpt;
     barOptions: any;
     // State for dropzone CSS toggling
     isHovering: boolean;
@@ -54,26 +50,36 @@ export class DashboardComponent implements OnInit {
         //     return;
         // }else {
             // Papa.parse(file, this.config);
-        console.log('start parse');
-            this.dataService.parse(file, this.barChartVertical, this.pieChart, this.barChartHor);
-        console.log('end parse');
-            this.dataService.showNotification('top', 'right', this.dataService.updtMessages[0],
-            this.dataService.colors[1], 'ti-face-smile');
-            this.isGrayed = false;
-        console.log('start set');
-            this.setNames();
-        console.log('end set');
+        //     });
+        let dataset;
+        Papa.parse(file, {
+            delimiter: '',	// auto-detect
+            newline: '',	// auto-detect
+            quoteChar: '"',
+            header: true,
+            complete: (results) => {
+                dataset = results.data;
+                console.log('Raw-data');
+                console.log(dataset);
+                this.dataService.updateCharts(dataset, this.barChartVertical, this.pieChart);
+                this.setPreviewData();
+                this.dataService.showNotification('top', 'right', this.dataService.updtMessages[0],
+                this.dataService.colors[1], 'ti-face-smile');
+                this.isGrayed = false;
+            },
+            skipEmptyLines: true
+        });
         // }
     }
-    setNames() {
+    setPreviewData() {
         this.name = this.dataService.topCustomer.name;
-        console.log(this.name);
         this.saleAmt = this.dataService.topCustomer.salesAmt;
-        console.log(this.saleAmt);
     }
     undoUpdate() {
         this.isGrayed = true;
-        this.dataService.undoUpdate(this.barChartVertical, this.serverDataVert);
+        this.barChartVertical.update(this.serverDataVert);
+        this.pieChart.update(this.serverDataPie, this.pieOpt);
+        this.name = this.dataService.serverTopCustomer.name; this.saleAmt = this.dataService.serverTopCustomer.salesAmt;
         this.dataService.showNotification('top', 'right', this.dataService.updtMessages[1], this.dataService.colors[0],
         'ti-face-smile');
     }
@@ -196,16 +202,16 @@ export class DashboardComponent implements OnInit {
           ]
         };
         this.serverDataHor = Object.assign({}, data);
+        console.log('Server Data Horizontal');
         console.log(this.serverDataHor);
         // this.barChartHor = new Chartist.Bar('#chartActivity', data, options);
-        // Bar chart verical
-        var dataPreferences = {
-
+        // Vertical Bar chart
+        const dataPreferences = {
             labels: ['Cust 1', 'Cust 2', 'Cust 3', 'Cust 4', 'Cust 5', 'Cust 6', 'Cust 7', 'Cust 8', 'Cust 9', 'Cust 10'],
             series: [1.2, 2, 2.5, 4.8, 7.2, 8.2, 9.2, 10.2, 11.2, 12.2]
         };
 
-        var optionsPreferences = {
+        const optionsPreferences = {
           distributeSeries: true,
           plugins: [
             ctThreshold({
@@ -241,21 +247,23 @@ export class DashboardComponent implements OnInit {
 
         };
         this.serverDataVert = Object.assign({}, dataPreferences);
+        console.log('Server Data Vertical');
         console.log(this.serverDataVert);
         this.barChartVertical = new Chartist.Bar('#chartPreferences', dataPreferences, optionsPreferences);
-        const sum = (a, b) => a + b;
         // Pie chart
-        var pieData = {
+        const sum = (a, b) => a + b;
+        const pieData = {
             data: ['Cash', 'Credit', 'Mixed'],
             series: [20, 15, 40]
         };
-
-        var pieOptions = {
+        this.serverDataPie = Object.assign({}, pieData);
+        const pieOptions = {
             labelInterpolationFnc: function (value, id) {
                 return `${Math.round(value / pieData.series.reduce(sum) * 100)}% ${pieData.data[id]}`;
             }
         };
-            this.pieChart = new Chartist.Pie('#chartActivity', pieData, pieOptions);
+        this.pieOpt = Object.assign({}, pieOptions);
+        this.pieChart = new Chartist.Pie('#chartActivity', pieData, pieOptions);
             // Horizontal bar chart
         new Chartist.Bar('#chartHighCreditMOP', {
             labels: ['Quater 1', 'Quater 2', 'Quater 3', 'Quater 4'],

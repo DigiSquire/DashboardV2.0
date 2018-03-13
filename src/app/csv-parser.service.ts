@@ -21,29 +21,18 @@ export class CsvParserService {
   dataHor;
   sortingarray;
   versionCreatedFor = {};
-versiondata = [];
-dataNoDupe = [];
-  bardata= []; piedata= [];
-pnameVersionObjNew = {};
-  topCustomer: TopCustomer={name: 'Harish', salesAmt: '7500'};
-  constructor() { }
-  parse(file: any, barChartVert, pieChart, barChartHor) {
-    Papa.parse(file, {
-      delimiter: '',	// auto-detect
-      newline: '',	// auto-detect
-      quoteChar: '"',
-      header: true,
-      complete: (results) => {
-        const dataset = results.data;
-        console.log('dataset');
-        console.log(dataset);
-        // this.findTopTen(dataset, barChartVert, barChartHor);
-        this.updateCharts(dataset, barChartVert, pieChart);
-        // this.getLargestCustomer(dataset, barChartVert, barChartHor);
-      },
-      skipEmptyLines: true
-    });
-  }
+  versiondata = [];
+  dataNoDupe = [];
+  bardata= [];
+  piedata= [];
+  // set data here from server. 1- On load in component call firebase to get data and
+  // save to this variable and then assign on onit
+  topCustomer: TopCustomer= {name: 'Jack', salesAmt: '7500'};
+  serverTopCustomer: TopCustomer;
+  constructor() {
+    // keep server copy
+    this.serverTopCustomer = Object.assign({}, this.topCustomer);
+   }
   updateCharts(dataset, barChartVert, pieChart) {
   const bardata = dataset.map(x => Object.assign({}, x));
     const piedata = dataset.map(x => Object.assign({}, x));
@@ -54,16 +43,14 @@ pnameVersionObjNew = {};
     this.checkDuplicateInObject(label, value, dataset, chartToUpdate, toUpdate);
   }
   updatePieChart(label, value, dataset, chartToUpdate, pie) {
-    this.checkDuplicateInObject(label, value, dataset, chartToUpdate,pie);
+    this.checkDuplicateInObject(label, value, dataset, chartToUpdate, pie);
   }
   mapValues(dataset, chartToUpdate, toUpdate) {
     if (toUpdate === 'pie') {
       const dataPie = {
-        // set our labels (x-axis) to the Label values from the JSON data
         data: dataset.map(function (id) {
           return id.MOP;
         }),
-        // set our values to Value value from the JSON data
         series: dataset.map(function (id) {
           return id.SaleAmount;
         })
@@ -88,11 +75,10 @@ pnameVersionObjNew = {};
           return id.SaleAmount;
         }),
       };
-      // 
-      // this.topCustomer.saleAmt = dataVert.series[0];
-      console.log('dataVert');
+      console.log('Vertical Bar chart Data');
       console.log(dataVert);
       this.topCustomer.name = dataVert.labels[0];
+      console.log(this.topCustomer.name);
       this.topCustomer.salesAmt = dataVert.series[0];
       chartToUpdate.update(dataVert);
     }
@@ -181,7 +167,6 @@ pnameVersionObjNew = {};
       if (parseInt(name1.SaleAmount) < parseInt(name2.SaleAmount)) return 1;
       if (parseInt(name1.SaleAmount) > parseInt(name2.SaleAmount)) return -1;
       return 0;
-
     }).slice(0, 10);
     console.log('Sorted Array');
     console.log(this.sortingarray);
@@ -204,7 +189,7 @@ pnameVersionObjNew = {};
         }
       }
       this.versionCreatedFor[holdValue] = 1;
-      // have duplicates
+      // have duplicates, so add them together, the last value in array is the sum result
       if (this.versiondata.length > 1) {
         this.versiondata.push(this.versiondata.reduce(this.getSum));
         dataset[i].SaleAmount = this.versiondata[(this.versiondata.length - 1)];
@@ -238,8 +223,5 @@ pnameVersionObjNew = {};
         }
       });
   }
-  undoUpdate(barChart, serverData): void {
-    barChart.update(serverData);
-}
 
 }
