@@ -13,7 +13,10 @@ interface Post {
   title: string;
   status: string;
 }
-
+// export interface TopCustomer {
+//     name: string;
+//     saleAmt: string;
+// }
 
 @Component({
     selector: 'dashboard-cmp',
@@ -22,7 +25,7 @@ interface Post {
     styleUrls: ['./file-upload.component.scss']
 })
 
-export class DashboardComponent implements OnInit{
+export class DashboardComponent implements OnInit {
     postsCol: AngularFirestoreCollection<Post>;
     posts: Observable<Post[]>;
 
@@ -35,6 +38,8 @@ export class DashboardComponent implements OnInit{
     // State for dropzone CSS toggling
     isHovering: boolean;
     isGrayed: boolean;
+    name: string;
+    saleAmt: string;
     constructor(private afs: AngularFirestore, public dataService: CsvParserService) {
     }
     toggleHover(event: boolean) {
@@ -48,23 +53,34 @@ export class DashboardComponent implements OnInit{
         //     this.dataService.colors[3], 'ti-face-sad');
         //     return;
         // }else {
-           
             // Papa.parse(file, this.config);
-            this.dataService.parse(file, this.barChartVertical, this.barChartHor);
-            // this.dataService.findTopTen();
+        console.log('start parse');
+            this.dataService.parse(file, this.barChartVertical, this.pieChart, this.barChartHor);
+        console.log('end parse');
             this.dataService.showNotification('top', 'right', this.dataService.updtMessages[0],
-            this.dataService.colors[1], 'ti-face-smile'); this.isGrayed = false;
+            this.dataService.colors[1], 'ti-face-smile');
+            this.isGrayed = false;
+        console.log('start set');
+            this.setNames();
+        console.log('end set');
         // }
+    }
+    setNames() {
+        this.name = this.dataService.topCustomer.name;
+        console.log(this.name);
+        this.saleAmt = this.dataService.topCustomer.salesAmt;
+        console.log(this.saleAmt);
     }
     undoUpdate() {
         this.isGrayed = true;
         this.dataService.undoUpdate(this.barChartVertical, this.serverDataVert);
-        this.dataService.undoUpdate(this.barChartHor, this.serverDataHor);
         this.dataService.showNotification('top', 'right', this.dataService.updtMessages[1], this.dataService.colors[0],
         'ti-face-smile');
     }
     ngOnInit() {
         this.isGrayed = true;
+        this.name = this.dataService.topCustomer.name;
+        this.saleAmt = this.dataService.topCustomer.salesAmt;
     //   this.postsCol = this.afs.collection('stats');
     //  this.posts = this.postsCol.valueChanges();
       //  var dataSales = {
@@ -227,7 +243,7 @@ export class DashboardComponent implements OnInit{
         this.serverDataVert = Object.assign({}, dataPreferences);
         console.log(this.serverDataVert);
         this.barChartVertical = new Chartist.Bar('#chartPreferences', dataPreferences, optionsPreferences);
-        var sum = (a, b) => a + b;
+        const sum = (a, b) => a + b;
         // Pie chart
         var pieData = {
             data: ['Cash', 'Credit', 'Mixed'],
@@ -247,7 +263,7 @@ export class DashboardComponent implements OnInit{
                 [5, 4, 3, 7],
                 [3, 2, 9, 5]
             ]
-        },{
+        }, {
             seriesBarDistance: 10,
             reverseData: false,
             horizontalBars: true,

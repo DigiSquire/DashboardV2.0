@@ -5,6 +5,10 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/map';
 declare var $: any;
+export interface TopCustomer {
+  name: string;
+  salesAmt: string;
+}
 @Injectable()
 export class CsvParserService {
   colors = ['info', 'success', 'warning', 'danger'];
@@ -16,8 +20,14 @@ export class CsvParserService {
   dataVert;
   dataHor;
   sortingarray;
+  versionCreatedFor = {};
+versiondata = [];
+dataNoDupe = [];
+  bardata= []; piedata= [];
+pnameVersionObjNew = {};
+  topCustomer: TopCustomer={name: 'Harish', salesAmt: '7500'};
   constructor() { }
-  parse(file: any, barChartVert, barChartHor) {
+  parse(file: any, barChartVert, pieChart, barChartHor) {
     Papa.parse(file, {
       delimiter: '',	// auto-detect
       newline: '',	// auto-detect
@@ -27,32 +37,68 @@ export class CsvParserService {
         const dataset = results.data;
         console.log('dataset');
         console.log(dataset);
-        // this.mapValues(dataset, barChartVert, barChartHor);
         // this.findTopTen(dataset, barChartVert, barChartHor);
-        this.checkDuplicateInObject('Label', dataset, barChartVert, barChartHor);
-        // this.removeDuplicates('Label',dataset);
-        //this.getLargestCustomer(dataset, barChartVert, barChartHor);
+        this.updateCharts(dataset, barChartVert, pieChart);
+        // this.getLargestCustomer(dataset, barChartVert, barChartHor);
       },
       skipEmptyLines: true
     });
   }
-  mapValues(dataset, barChartVert, barChartHor) {
-    this.dataVert = {
-      // set our labels (x-axis) to the Label values from the JSON data
-      labels: dataset.map(function (id) {
-        return id.Label;
-      }),
-      // set our values to Value value from the JSON data
-      series: dataset.map(function (id) {
-        return id.Value;
-      })
-    };
-    console.log('dataVert');
-    console.log(this.dataVert);
-    barChartVert.update(this.dataVert);
+  updateCharts(dataset, barChartVert, pieChart) {
+  const bardata = dataset.map(x => Object.assign({}, x));
+    const piedata = dataset.map(x => Object.assign({}, x));
+    this.updateTopCustomerInMonth('Party', 'SaleAmount', bardata, barChartVert, 'bar');
+    this.updatePieChart('MOP', 'SaleAmount', piedata, pieChart, 'pie');
+  }
+  updateTopCustomerInMonth(label, value, dataset, chartToUpdate, toUpdate) {
+    this.checkDuplicateInObject(label, value, dataset, chartToUpdate, toUpdate);
+  }
+  updatePieChart(label, value, dataset, chartToUpdate, pie) {
+    this.checkDuplicateInObject(label, value, dataset, chartToUpdate,pie);
+  }
+  mapValues(dataset, chartToUpdate, toUpdate) {
+    if (toUpdate === 'pie') {
+      const dataPie = {
+        // set our labels (x-axis) to the Label values from the JSON data
+        data: dataset.map(function (id) {
+          return id.MOP;
+        }),
+        // set our values to Value value from the JSON data
+        series: dataset.map(function (id) {
+          return id.SaleAmount;
+        })
+      };
+      const sum = (a, b) => a + b;
+      const pieOptions = {
+        labelInterpolationFnc: (value, id) => {
+          return `${Math.round(value / dataPie.series.reduce(sum) * 100)}% ${dataPie.data[id]}`;
+        }
+      };
+      console.log('dataPie');
+      console.log(dataPie);
+      chartToUpdate.update(dataPie, pieOptions);
+    } else {
+      const dataVert = {
+        // set our labels (x-axis) to the Label values from the JSON data
+        labels: dataset.map(function (id) {
+          return id.Party;
+        }),
+        // set our values to Value value from the JSON data
+        series: dataset.map(function (id) {
+          return id.SaleAmount;
+        }),
+      };
+      // 
+      // this.topCustomer.saleAmt = dataVert.series[0];
+      console.log('dataVert');
+      console.log(dataVert);
+      this.topCustomer.name = dataVert.labels[0];
+      this.topCustomer.salesAmt = dataVert.series[0];
+      chartToUpdate.update(dataVert);
+    }
     // this.dataHor = {
     //   labels: dataset.map(function (id) {
-    //       return id.Label2;
+    //       return id.Label2
     //   }),
     //   series: [dataset.map(function (id, val) {
     //       return id.Value2;
@@ -86,7 +132,7 @@ export class CsvParserService {
       // })]
     };
     console.log(this.dataVert);
-    //barChartVert.update(this.dataVert);
+    // barChartVert.update(this.dataVert);
     new Chartist.Bar('#chartActivity', {
       labels: this.dataVert.labels,
       series: this.dataVert.series
@@ -130,45 +176,54 @@ export class CsvParserService {
 
   }
 
-  findTopTen(dataset, barChartVert, barChartHor) {
+  findTopTen(dataset, chartToUpdate, toUpdate) {
     this.sortingarray = dataset.sort((name1, name2): number => {
-      if (parseInt(name1.Value) < parseInt(name2.Value)) return 1;
-      if (parseInt(name1.Value) > parseInt(name2.Value)) return -1;
+      if (parseInt(name1.SaleAmount) < parseInt(name2.SaleAmount)) return 1;
+      if (parseInt(name1.SaleAmount) > parseInt(name2.SaleAmount)) return -1;
       return 0;
 
     }).slice(0, 10);
     console.log('Sorted Array');
     console.log(this.sortingarray);
-    this.mapValues(this.sortingarray, barChartVert, barChartHor);
+    this.mapValues(this.sortingarray, chartToUpdate, toUpdate);
   }
-  checkDuplicateInObject(propertyName, dataset, barChartVert, barChartHor) {
-    var seenDuplicate = false,
-      temp1, temp2, temp3, index,
-      testObject = {};
-
-    dataset.map(function (item) {
-      var itemPropertyName = item[propertyName];
-      if (itemPropertyName in testObject) {
-        temp1 = testObject[itemPropertyName].Value;
-        index = dataset.indexOf(testObject[itemPropertyName]);
-        dataset.splice(index, 1);
-        temp2 = item.Value;
-        temp3 = parseInt(temp1) + parseInt(temp2);
-        item.Value = temp3.toString();
+  checkDuplicateInObject(label, value, dataset, chartToUpdate, toUpdate) {
+    this.dataNoDupe = []; this.versionCreatedFor = {};
+    for (let i = 0; i < dataset.length; i++) {
+      const valueto = dataset[i];
+      const holdValue = valueto[label];
+      for (let j = 0; j < dataset.length; j++) {
+        const valueto2 = dataset[j];
+        const holdValue2 = valueto2[label];
+        if (holdValue === holdValue2) {
+          if (this.versionCreatedFor[holdValue] === undefined) {
+            const value2 = dataset[j];
+            const holdValue21 = value2[value];
+            this.versiondata.push(parseInt(holdValue21));
+          }
+        }
       }
-      else {
-        testObject[itemPropertyName] = item;
-        delete item.duplicate;
+      this.versionCreatedFor[holdValue] = 1;
+      // have duplicates
+      if (this.versiondata.length > 1) {
+        this.versiondata.push(this.versiondata.reduce(this.getSum));
+        dataset[i].SaleAmount = this.versiondata[(this.versiondata.length - 1)];
+        this.dataNoDupe.push(dataset[i]);
       }
-    });
+      // no duplicates and duplicate check was done
+      if (this.versiondata.length === 1 && this.versionCreatedFor[holdValue] === 1) {
+        this.dataNoDupe.push(dataset[i]);
+      }
+      this.versiondata = [];
 
-    return this.findTopTen(dataset, barChartVert, barChartHor);
+    }
+    console.log('No duplicate');
+    console.log(this.dataNoDupe);
+    return this.findTopTen(this.dataNoDupe, chartToUpdate, toUpdate);
   }
-  removeDuplicates(prop, dataset) {
-    return dataset.filter((obj, pos, arr) => {
-      return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
-    });
-  }
+  getSum(total, num) {
+  return total + num;
+}
   showNotification(from, align, updtMessages, color, icon) {
     $.notify({
       icon: icon,

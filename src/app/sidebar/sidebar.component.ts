@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
-declare var $:any;
+import { environment } from '../../environments/environment';
+declare var $: any;
 
 export interface RouteInfo {
     path: string;
@@ -10,14 +10,14 @@ export interface RouteInfo {
 }
 
 export const ROUTES: RouteInfo[] = [
-    { path: 'dashboard', title: 'Dashboard',  icon: 'ti-panel', class: '' }
-    // { path: 'user', title: 'User Profile',  icon:'ti-user', class: '' },
-    // { path: 'table', title: 'Table List',  icon:'ti-view-list-alt', class: '' },
-    // { path: 'typography', title: 'Typography',  icon:'ti-text', class: '' },
-    // { path: 'icons', title: 'Icons',  icon:'ti-pencil-alt2', class: '' },
-    // { path: 'maps', title: 'Maps',  icon:'ti-map', class: '' },
-    // { path: 'notifications', title: 'Notifications',  icon:'ti-bell', class: '' },
-  //  { path: 'upgrade', title: 'DigiSquire',  icon:'/logo.png', class: 'active-pro' },
+    { path: 'dashboard', title: 'Dashboard',  icon: 'ti-panel', class: '' },
+    { path: 'user', title: 'User Profile',  icon:'ti-user', class: '' },
+    { path: 'table', title: 'Table List',  icon:'ti-view-list-alt', class: '' },
+    { path: 'typography', title: 'Typography',  icon:'ti-text', class: '' },
+    { path: 'icons', title: 'Icons',  icon:'ti-pencil-alt2', class: '' },
+    { path: 'maps', title: 'Maps',  icon:'ti-map', class: '' },
+    { path: 'notifications', title: 'Notifications',  icon:'ti-bell', class: '' },
+   { path: 'upgrade', title: 'DigiSquire',  icon:'/logo.png', class: 'active-pro' }
 ];
 
 @Component({
@@ -29,10 +29,18 @@ export const ROUTES: RouteInfo[] = [
 export class SidebarComponent implements OnInit {
     public menuItems: any[];
     ngOnInit() {
-        this.menuItems = ROUTES.filter(menuItem => menuItem);
+        this.menuItems = ROUTES.filter(menuItem => {
+            if (environment.hideRoutes) { return menuItem.path === 'dashboard'; }else {
+             return menuItem;
+        } });
+            // if (environment.showRoutes) {
+            //     this.menuItems = this.menuItems.map(function (id) {
+            //         return id[0];
+            //     });
+            // }
     }
     isNotMobileMenu(){
-        if($(window).width() > 991){
+        if ($(window).width() > 991) {
             return false;
         }
         return true;
