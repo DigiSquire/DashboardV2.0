@@ -4094,7 +4094,7 @@ Copyright (c) 2015 Daniel Eden
   }
 
   .fixed-plugin {
-    top: 120px;
+    top: 20px;
   }
 }
 @media (max-width: 991px) {
