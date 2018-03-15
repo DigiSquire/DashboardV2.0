@@ -33,11 +33,6 @@ export class SidebarComponent implements OnInit {
             if (environment.hideRoutes) { return menuItem.path === 'dashboard'; }else {
              return menuItem;
         } });
-            // if (environment.showRoutes) {
-            //     this.menuItems = this.menuItems.map(function (id) {
-            //         return id[0];
-            //     });
-            // }
     }
     isNotMobileMenu(){
         if ($(window).width() > 991) {
