@@ -14,10 +14,11 @@ export class FixedPluginComponent implements OnInit{
         var $off_canvas_sidebar = $('.off-canvas-sidebar');
         var window_width = $(window).width();
 
-        if(window_width > 767){
-            if($('.fixed-plugin .dropdown').hasClass('show-dropdown')){
-                $('.fixed-plugin .dropdown').addClass('open');
-            }
+        if(window_width > 767) {
+            // To stop settings to be opened on load
+            // if($('.fixed-plugin .dropdown').hasClass('show-dropdown')){
+            //     $('.fixed-plugin .dropdown').addClass('open');
+            // }
 
         }
 

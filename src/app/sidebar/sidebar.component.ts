@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { bootstrapSwitch } from 'bootstrap-switch/dist/js/bootstrap-switch';
 declare var $: any;
 
 export interface RouteInfo {
@@ -24,16 +25,27 @@ export const ROUTES: RouteInfo[] = [
 @Component({
     moduleId: module.id,
     selector: 'sidebar-cmp',
-    templateUrl: 'sidebar.component.html',
+    templateUrl: 'sidebar.component.html'
 })
 
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, AfterViewInit {
     public menuItems: any[];
     ngOnInit() {
         this.menuItems = ROUTES.filter(menuItem => {
             if (environment.hideRoutes) { return menuItem.demo === true; }else {
              return menuItem;
         } });
+    }
+    ngAfterViewInit() {
+        $('input[name="my-checkbox"]').bootstrapSwitch.defaults.onColor = 'success';
+        $('[name="my-checkbox"]').bootstrapSwitch();
+        $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function (event, state) {
+            if (!state) {
+                $('body').addClass('sidebar-mini');
+            }else{
+                $('body').removeClass('sidebar-mini');
+            }
+        });
     }
     isNotMobileMenu(){
         if ($(window).width() > 991) {

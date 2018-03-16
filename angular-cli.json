@@ -19,7 +19,8 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "styles.css"
+        "styles.css",
+        "../node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css"
       ],
       "scripts": [
           "../node_modules/jquery/dist/jquery.js",
@@ -30,7 +31,8 @@
           "../node_modules/chartist-plugin-axistitle/dist/chartist-plugin-axistitle.js",
           "../node_modules/chartist-plugin-threshold/dist/chartist-plugin-threshold.js",
           "../node_modules/papaparse/papaparse.min.js",
-          "../node_modules/bootstrap-notify/bootstrap-notify.js"
+          "../node_modules/bootstrap-notify/bootstrap-notify.js",
+          "../node_modules/bootstrap-switch/dist/js/bootstrap-switch.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
