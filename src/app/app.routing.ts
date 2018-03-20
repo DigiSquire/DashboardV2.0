@@ -10,13 +10,13 @@ import { NotificationsComponent }   from './notifications/notifications.componen
 import { UpgradeComponent }   from './upgrade/upgrade.component';
 
 export const AppRoutes: Routes = [
+    // {
+    //     path: '',
+    //     redirectTo: 'dashboard',
+    //     pathMatch: 'full',
+    // },
     {
         path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-    },
-    {
-        path: 'dashboard',
         component: DashboardComponent
     },
     {

@@ -31,21 +31,14 @@ export const ROUTES: RouteInfo[] = [
 export class SidebarComponent implements OnInit, AfterViewInit {
     public menuItems: any[];
     ngOnInit() {
-        this.menuItems = ROUTES.filter(menuItem => {
-            if (environment.hideRoutes) { return menuItem.demo === true; }else {
-             return menuItem;
-        } });
+        this.menuItems = ROUTES.filter(menuItem => (environment.hideRoutes ? menuItem.demo === true : menuItem));
     }
     ngAfterViewInit() {
         $('input[name="my-checkbox"]').bootstrapSwitch.defaults.onColor = 'success';
         $('[name="my-checkbox"]').bootstrapSwitch();
-        $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function (event, state) {
-            if (!state) {
-                $('body').addClass('sidebar-mini');
-            }else{
-                $('body').removeClass('sidebar-mini');
-            }
-        });
+        $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', (event, state) =>
+             (state ? $('body').removeClass('sidebar-mini') : $('body').addClass('sidebar-mini') )
+        );
     }
     isNotMobileMenu(){
         if ($(window).width() > 991) {
