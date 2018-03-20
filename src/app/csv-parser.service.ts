@@ -15,8 +15,6 @@ export class CsvParserService {
   updtMessages = ['Table updated successfully',
    'You have successfully undone your changes: <b>Server data restored</b>',
    'Please upload a file with <b>.csv extension</b>'];
-  config;
-  parseDataObj;
   dataVert;
   dataHor;
   sortingarray;

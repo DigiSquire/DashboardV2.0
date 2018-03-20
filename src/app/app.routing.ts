@@ -20,6 +20,10 @@ export const AppRoutes: Routes = [
         component: DashboardComponent
     },
     {
+        path: 'dashboard',
+        component: DashboardComponent
+    },
+    {
         path: 'user',
         component: UserComponent
     },
