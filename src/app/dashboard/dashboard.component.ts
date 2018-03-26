@@ -276,7 +276,7 @@ export class DashboardComponent implements OnInit {
             reverseData: false,
             horizontalBars: true,
             axisY: {
-                offset: 90
+                offset: 70
             },
             plugins: [
                 ctAxisTitle({
