@@ -155,7 +155,7 @@
             </div>
         </div>
         <div class="row dropzone" dropZone (hovered)="toggleHover($event)" (dropped)="startUpload($event)" [class.hovering]="isHovering">
-            <div class="col-md-7 col-sm-12">
+            <div class="col-md-7 col-sm-12" style=" max-height: 400px; ">
                 <div class="card">
                     <div class="header">
                         <h4 class="title">Top Customers In The Month<button (click)="undoUpdate()" [disabled]="isGrayed" class="button ti-back-right undo"></button></h4>
