@@ -566,6 +566,11 @@ hr {
 .off-canvas-sidebar[data-background-color="black"]:before {
   background-color: #212120;
 }
+.sidebar[data-background-color="orange"]:after, .sidebar[data-background-color="orange"]:before,
+.off-canvas-sidebar[data-background-color="orange"]:after,
+.off-canvas-sidebar[data-background-color="orange"]:before {
+  background-color: #ff9800;
+}
 .sidebar[data-background-color="black"] .logo,
 .off-canvas-sidebar[data-background-color="black"] .logo {
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
@@ -580,6 +585,10 @@ hr {
 }
 .sidebar[data-background-color="black"] .nav li:not(.active) > a,
 .off-canvas-sidebar[data-background-color="black"] .nav li:not(.active) > a {
+  color: #FFFFFF;
+}
+.sidebar[data-background-color="orange"] .nav li:not(.active) > a,
+.off-canvas-sidebar[data-background-color="orange"] .nav li:not(.active) > a {
   color: #FFFFFF;
 }
 .sidebar[data-background-color="black"] .nav .divider,
@@ -2803,6 +2812,7 @@ Copyright (c) 2015 Daniel Eden
   position: absolute;
   top: 0;
   left: 0;
+  overflow:visible;
 }
 
 .ct-perfect-fifth {
@@ -3920,7 +3930,9 @@ Copyright (c) 2015 Daniel Eden
 .fixed-plugin .badge-black {
   background-color: #212120;
 }
-
+.fixed-plugin .badge-orange {
+  background-color: #ff9800;
+}
 .fixed-plugin .badge-primary {
   background-color: #7A9E9F;
 }
