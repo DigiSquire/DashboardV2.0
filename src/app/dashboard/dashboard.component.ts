@@ -58,6 +58,13 @@ export class DashboardComponent implements OnInit {
             quoteChar: '"',
             header: true,
             complete: (results) => {
+                if (results.errors.length > 0) {
+                    this.dataService.showNotification('top', 'right', this.dataService.updtMessages[2],
+                        this.dataService.colors[3], 'ti-face-sad');
+                        console.log('Errors Encountered');
+                        console.log(results.errors);
+                        return;
+                }
                 dataset = results.data;
                 console.log('Raw-data');
                 console.log(dataset);

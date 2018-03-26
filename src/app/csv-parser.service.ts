@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as Chartist from 'chartist';
-import * as Papa from 'papaparse/papaparse.min.js';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/map';
 declare var $: any;
 export interface TopCustomer {
   name: string;
@@ -14,7 +10,7 @@ export class CsvParserService {
   colors = ['info', 'success', 'warning', 'danger'];
   updtMessages = ['Table updated successfully',
    'You have successfully undone your changes: <b>Server data restored</b>',
-   'Please upload a file with <b>.csv extension</b>'];
+   'Please upload a valid file with <b>.csv extension</b>'];
   dataVert;
   dataHor;
   sortingarray;
@@ -53,10 +49,9 @@ export class CsvParserService {
           return id.SaleAmount;
         })
       };
-      const sum = (a, b) => a + b;
       const pieOptions = {
         labelInterpolationFnc: (value, id) => {
-          return `${Math.round(value / dataPie.series.reduce(sum) * 100)}% ${dataPie.data[id]}`;
+          return `${Math.round(value / dataPie.series.reduce(this.getSum) * 100)}% ${dataPie.data[id]}`;
         }
       };
       console.log('dataPie');
@@ -92,7 +87,7 @@ export class CsvParserService {
     // barChartHor.update(this.dataHor);
   }
   getLargestCustomer(dataset, barChartVert, barChartHor) {
-    const testarray1 = dataset.filter((id) => {
+    const momArray = dataset.filter((id) => {
       const now = new Date(id.InvDate);
       const refDate: Date = new Date('31-Jan-2018');
       return now < refDate;
@@ -103,69 +98,22 @@ export class CsvParserService {
       return now < refDate;
     }).splice(0, 4);
 
-    console.log(testarray1);
-    this.dataVert = {
-      // set our labels (x-axis) to the Label values from the JSON data
-      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-      // set our values to Value value from the JSON data
-      series: [testarray1.map(function (id) {
-        return id.SaleAmount;
-      })]
-      // series2: [testarray2.map(function (id) {
-      //   return id.SaleAmount;
-      // })]
-    };
-    console.log(this.dataVert);
-    // barChartVert.update(this.dataVert);
-    new Chartist.Bar('#chartActivity', {
-      labels: this.dataVert.labels,
-      series: this.dataVert.series
-    }, {
-        // Default mobile configuration
-        stackBars: true,
-        axisX: {
-          labelInterpolationFnc: function (value) {
-            return value.split(/\s+/).map(function (word) {
-              return word[0];
-            }).join('');
-          }
-        },
-        axisY: {
-          offset: 20
-        }
-      }, [
-        // Options override for media > 400px
-        ['screen and (min-width: 400px)', {
-          reverseData: true,
-          horizontalBars: true,
-          axisX: {
-            labelInterpolationFnc: Chartist.noop
-          },
-          axisY: {
-            offset: 60
-          }
-        }],
-        // Options override for media > 800px
-        ['screen and (min-width: 800px)', {
-          stackBars: false,
-          seriesBarDistance: 10
-        }],
-        // Options override for media > 1000px
-        ['screen and (min-width: 1000px)', {
-          reverseData: false,
-          horizontalBars: false,
-          seriesBarDistance: 15
-        }]
-      ]);
-
+    console.log(momArray);
+    // this.dataVert = {
+    //   labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+    //   series: [testarray1.map(function (id) {
+    //     return id.SaleAmount;
+    //   })]
+    //   series2: [testarray2.map(function (id) {
+    //     return id.SaleAmount;
+    //   })]
+    // };
   }
 
   findTopTen(dataset, chartToUpdate, toUpdate) {
-    this.sortingarray = dataset.sort((name1, name2): number => {
-      if (parseInt(name1.SaleAmount) < parseInt(name2.SaleAmount)) return 1;
-      if (parseInt(name1.SaleAmount) > parseInt(name2.SaleAmount)) return -1;
-      return 0;
-    }).slice(0, 10);
+    this.sortingarray = dataset.sort((name1, name2) => (parseInt(name1.SaleAmount) < parseInt(name2.SaleAmount) ? 1 :
+     parseInt(name1.SaleAmount) > parseInt(name2.SaleAmount) ? -1 : 0)
+    ).slice(0, 10);
     console.log('Sorted Array');
     console.log(this.sortingarray);
     this.mapValues(this.sortingarray, chartToUpdate, toUpdate);
@@ -173,20 +121,16 @@ export class CsvParserService {
   checkDuplicateInObject(label, value, dataset, chartToUpdate, toUpdate) {
     this.dataNoDupe = []; this.versionCreatedFor = {};
     for (let i = 0; i < dataset.length; i++) {
-      const valueto = dataset[i];
-      const holdValue = valueto[label];
+      const searchFor = dataset[i][label];
       for (let j = 0; j < dataset.length; j++) {
-        const valueto2 = dataset[j];
-        const holdValue2 = valueto2[label];
-        if (holdValue === holdValue2) {
-          if (this.versionCreatedFor[holdValue] === undefined) {
-            const value2 = dataset[j];
-            const holdValue21 = value2[value];
-            this.versiondata.push(parseInt(holdValue21));
+        const compareWith = dataset[j][label];
+        if (searchFor === compareWith) {
+          if (this.versionCreatedFor[searchFor] === undefined) {
+            this.versiondata.push(parseInt(dataset[j][value]));
           }
         }
       }
-      this.versionCreatedFor[holdValue] = 1;
+      this.versionCreatedFor[searchFor] = 1;
       // have duplicates, so add them together, the last value in array is the sum result
       if (this.versiondata.length > 1) {
         this.versiondata.push(this.versiondata.reduce(this.getSum));
@@ -194,7 +138,7 @@ export class CsvParserService {
         this.dataNoDupe.push(dataset[i]);
       }
       // no duplicates and duplicate check was done
-      if (this.versiondata.length === 1 && this.versionCreatedFor[holdValue] === 1) {
+      if (this.versiondata.length === 1 && this.versionCreatedFor[searchFor] === 1) {
         this.dataNoDupe.push(dataset[i]);
       }
       this.versiondata = [];

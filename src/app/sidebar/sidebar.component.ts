@@ -35,8 +35,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     }
     ngAfterViewInit() {
         $('input[name="my-checkbox"]').bootstrapSwitch.defaults.onColor = 'success';
-        $('[name="my-checkbox"]').bootstrapSwitch();
-        $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', (event, state) =>
+        $('[name="my-checkbox"]').bootstrapSwitch().on('switchChange.bootstrapSwitch', (event, state) =>
              (state ? $('body').removeClass('sidebar-mini') : $('body').addClass('sidebar-mini') )
         );
     }
