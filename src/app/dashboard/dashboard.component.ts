@@ -24,11 +24,12 @@ export class DashboardComponent implements OnInit {
     postsCol: AngularFirestoreCollection<Post>;
     posts: Observable<Post[]>;
     barChartVertical: any;
+    momChartVertical;
     pieChart;
     barChartHor;
     serverDataVert;
     serverDataPie;
-    serverDataHor;
+    serverMOMVertData;
     pieOpt;
     barOptions: any;
     // State for dropzone CSS toggling
@@ -68,7 +69,7 @@ export class DashboardComponent implements OnInit {
                 dataset = results.data;
                 console.log('Raw-data');
                 console.log(dataset);
-                this.dataService.updateCharts(dataset, this.barChartVertical, this.pieChart);
+                this.dataService.updateCharts(dataset, this.momChartVertical, this.barChartVertical, this.pieChart);
                 this.setPreviewData();
                 this.dataService.showNotification('top', 'right', this.dataService.updtMessages[0],
                 this.dataService.colors[1], 'ti-face-smile');
@@ -133,85 +134,49 @@ export class DashboardComponent implements OnInit {
         ];
 
         new Chartist.Line('#chartHours', dataSales, optionsSales, responsiveSales);*/
-        var chart = new Chartist.Bar('.ct-chart', {
+        const momVertData = {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             series: [[5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
-                [3, 2, 9, 5, 4, 6, 4, 6, 7, 8, 7, 4]]
-                    }, {
-                        chartPadding: {
-                            top: 20,
-                            right: 0,
-                            bottom: 20,
-                            left: 0
-                        },
-                        axisY: {
-                            onlyInteger: true
-                        },
-                        plugins: [
-                            ctAxisTitle({
-                                axisX: {
-                                    axisTitle: 'Month',
-                                    axisClass: 'ct-axis-title',
-                                    offset: {
-                                        x: 0,
-                                        y: 50
-                                    },
-                                    textAnchor: 'middle'
-                                },
-                                axisY: {
-                                    axisTitle: 'Sale Amount',
-                                    axisClass: 'ct-axis-title',
-                                    offset: {
-                                        x: 0,
-                                        y: -1
-                                    },
-                                    flipTitle: false
-                                }
-                            })
-                        ]
-                    });
-
-        var data = {
-            labels: ['App1', 'App2', 'App3', 'App4', 'App5'],
-          series: [
-            [4,1.2,2,17,12]
-          ]
+            [3, 2, 9, 5, 4, 6, 4, 6, 7, 8, 7, 4]]
         };
 
-        var options = {
-          seriesBarDistance: 10,
-          reverseData: false,
-          horizontalBars: true,
-          axisY: {
-            offset: 70
-          },
-          plugins: [
-              ctAxisTitle({
-                  axisX: {
-                      axisTitle: 'Quality(Defects/100PDs)',
-                      axisClass: 'ct-axis-title',
-                      offset: {
-                          x: 0,
-                          y: 32
-                      },
-                      textAnchor: 'middle'
-                  },
-                  axisY: {
-                      axisTitle: 'Apps/Projects',
-                      axisClass: 'ct-axis-title',
-                      offset: {
-                          x: 0,
-                          y: 0
-                      },
-                      flipTitle: false
-                  }
-              })
-          ]
+        const momVertOptions = {
+            chartPadding: {
+                top: 20,
+                right: 0,
+                bottom: 20,
+                left: 0
+            },
+            axisY: {
+                onlyInteger: true
+            },
+            plugins: [
+                ctAxisTitle({
+                    axisX: {
+                        axisTitle: 'Month',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: 50
+                        },
+                        textAnchor: 'middle'
+                    },
+                    axisY: {
+                        axisTitle: 'Sale Amount',
+                        axisClass: 'ct-axis-title',
+                        offset: {
+                            x: 0,
+                            y: -1
+                        },
+                        flipTitle: false
+                    }
+                })
+            ]
         };
-        this.serverDataHor = Object.assign({}, data);
-        console.log('Server Data Horizontal');
-        console.log(this.serverDataHor);
-        // this.barChartHor = new Chartist.Bar('#chartActivity', data, options);
+        this.serverMOMVertData = Object.assign({}, momVertData);
+        console.log('MOM Data Vertical');
+        console.log(this.serverMOMVertData);
+        this.momChartVertical = new Chartist.Bar('.ct-chart', momVertData, momVertOptions);
         // Vertical Bar chart
         const dataPreferences = {
             labels: ['Cust 1', 'Cust 2', 'Cust 3', 'Cust 4', 'Cust 5', 'Cust 6', 'Cust 7', 'Cust 8', 'Cust 9', 'Cust 10'],

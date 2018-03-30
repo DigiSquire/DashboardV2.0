@@ -27,11 +27,27 @@ export class CsvParserService {
     // keep server copy
     this.serverTopCustomer = Object.assign({}, this.topCustomer);
    }
-  updateCharts(dataset, barChartVert, pieChart) {
-  const bardata = dataset.map(x => Object.assign({}, x));
+  updateCharts(dataset, momChartVertical, barChartVert, pieChart) {
+    const bardata = dataset.map(x => Object.assign({}, x));
     const piedata = dataset.map(x => Object.assign({}, x));
+    const momdata = dataset.map(x => Object.assign({}, x));
     this.updateTopCustomerInMonth('Party', 'SaleAmount', bardata, barChartVert, 'bar');
     this.updatePieChart('MOP', 'SaleAmount', piedata, pieChart, 'pie');
+    this.groupDataByMonth(momdata, momChartVertical);
+  }
+  groupDataByMonth(dataset, momChartVertical) {
+    const groups = dataset.reduce(function (r, o) {
+      const month = o.InvDate.split(('-'))[1];
+      (r[month]) ? r[month].data.push(o) : r[month] = { group: String(month), data: [o] };
+      return r;
+    }, {});
+
+    const result = Object.keys(groups).map(function (k) { return groups[k]; });
+
+    console.log(result);
+    this.monthOnMonth(result, 'Party', 'SaleAmount', momChartVertical, 'mom');
+    // map results[0] to some input from template to update chart for different months
+    // this.updateTopCustomerInMonth('Party', 'SaleAmount', result[0].data, barChartVert, 'bar');
   }
   updateTopCustomerInMonth(label, value, dataset, chartToUpdate, toUpdate) {
     this.checkDuplicateInObject(label, value, dataset, chartToUpdate, toUpdate);
@@ -66,7 +82,7 @@ export class CsvParserService {
         // set our values to Value value from the JSON data
         series: dataset.map(function (id) {
           return id.SaleAmount;
-        }),
+      })
       };
       console.log('Vertical Bar chart Data');
       console.log(dataVert);
@@ -75,16 +91,6 @@ export class CsvParserService {
       this.topCustomer.salesAmt = dataVert.series[0];
       chartToUpdate.update(dataVert);
     }
-    // this.dataHor = {
-    //   labels: dataset.map(function (id) {
-    //       return id.Label2
-    //   }),
-    //   series: [dataset.map(function (id, val) {
-    //       return id.Value2;
-    //   })]
-    // };
-    // console.log(this.dataHor);
-    // barChartHor.update(this.dataHor);
   }
   getLargestCustomer(dataset, barChartVert, barChartHor) {
     const momArray = dataset.filter((id) => {
@@ -113,10 +119,36 @@ export class CsvParserService {
   findTopTen(dataset, chartToUpdate, toUpdate) {
     this.sortingarray = dataset.sort((name1, name2) => (parseInt(name1.SaleAmount) < parseInt(name2.SaleAmount) ? 1 :
      parseInt(name1.SaleAmount) > parseInt(name2.SaleAmount) ? -1 : 0)
-    ).slice(0, 10);
+    );
     console.log('Sorted Array');
     console.log(this.sortingarray);
-    this.mapValues(this.sortingarray, chartToUpdate, toUpdate);
+    if (toUpdate === 'mom') {
+      return this.sortingarray;
+    } else if (toUpdate === 'bar') {
+      this.mapValues(this.sortingarray.slice(0, 6), chartToUpdate, toUpdate);
+    }else {
+      this.mapValues(this.sortingarray, chartToUpdate, toUpdate);
+    }
+  }
+  monthOnMonth(result, label, value, chartToUpdate, toUpdate) {
+    const monthGroup = result.map(x => Object.assign({}, x));
+    let A1 = []; let A2 = []; let parent = [];
+    for (let i = 0; i < monthGroup.length; i++) {
+      monthGroup[i].data = this.checkDuplicateInObject(label, value, monthGroup[i].data, chartToUpdate, toUpdate);
+      A1.push(monthGroup[i].data[0].SaleAmount); A2.push(monthGroup[i].data[1].SaleAmount);
+     }
+    parent.push(A1); parent.push(A2);
+    console.log('parent array');
+    console.log(parent);
+    console.log('structure');
+    console.log(monthGroup);
+    this.dataHor = {
+      labels: monthGroup.map(function (id) {
+        return id.group;
+      }),
+      series: parent
+    };
+    chartToUpdate.update(this.dataHor);
   }
   checkDuplicateInObject(label, value, dataset, chartToUpdate, toUpdate) {
     this.dataNoDupe = []; this.versionCreatedFor = {};
