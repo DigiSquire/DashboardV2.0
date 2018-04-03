@@ -87,6 +87,7 @@ export class DashboardComponent implements OnInit {
         this.isGrayed = true;
         this.barChartVertical.update(this.serverDataVert);
         this.pieChart.update(this.serverDataPie, this.pieOpt);
+        this.momChartVertical.update(this.serverMOMVertData);
         this.name = this.dataService.serverTopCustomer.name; this.saleAmt = this.dataService.serverTopCustomer.salesAmt;
         this.dataService.showNotification('top', 'right', this.dataService.updtMessages[1], this.dataService.colors[0],
         'ti-face-smile');
