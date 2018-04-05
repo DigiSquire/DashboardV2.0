@@ -534,7 +534,7 @@ hr {
 .off-canvas-sidebar:before,
 .off-canvas-sidebar[data-background-color="white"]:after,
 .off-canvas-sidebar[data-background-color="white"]:before {
-  background-color: #FFFFFF;
+  background: linear-gradient(to right, #0b486b 0%, #f9a602 100%);
 }
 .sidebar .logo, .sidebar[data-background-color="white"] .logo,
 .off-canvas-sidebar .logo,
@@ -544,17 +544,17 @@ hr {
 .sidebar .logo p, .sidebar[data-background-color="white"] .logo p,
 .off-canvas-sidebar .logo p,
 .off-canvas-sidebar[data-background-color="white"] .logo p {
-  color: #66615B;
+  color: #fff;
 }
 .sidebar .logo .simple-text, .sidebar[data-background-color="white"] .logo .simple-text,
 .off-canvas-sidebar .logo .simple-text,
 .off-canvas-sidebar[data-background-color="white"] .logo .simple-text {
-  color: #66615B;
+  color: #fff;
 }
 .sidebar .nav li:not(.active) > a, .sidebar[data-background-color="white"] .nav li:not(.active) > a,
 .off-canvas-sidebar .nav li:not(.active) > a,
 .off-canvas-sidebar[data-background-color="white"] .nav li:not(.active) > a {
-  color: #66615B;
+  color: #fff;
 }
 .sidebar .nav .divider, .sidebar[data-background-color="white"] .nav .divider,
 .off-canvas-sidebar .nav .divider,
@@ -622,7 +622,7 @@ hr {
 }
 
 .main-panel {
-  background-color: #f4f3ef;
+  background: linear-gradient(to right, #0b486b 0%, #f9a602 100%);
   position: relative;
   z-index: 2;
   float: right;
